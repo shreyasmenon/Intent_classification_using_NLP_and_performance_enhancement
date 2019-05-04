@@ -1,3 +1,28 @@
+def get_wordnet_pos(pos_tag):
+    
+    # if pos tag starts with 'J'
+    if pos_tag.startswith('J'):
+        # return wordnet tag "ADJ"
+        return wordnet.ADJ
+    
+    # if pos tag starts with 'V'
+    elif pos_tag.startswith('V'):
+        # return wordnet tag "VERB"
+        return wordnet.VERB
+    
+    # if pos tag starts with 'N'
+    elif pos_tag.startswith('N'):
+        # return wordnet tag "NOUN"
+        return wordnet.NOUN
+    
+    elif pos_tag.startswith('R'):
+        return wordnet.ADV
+    else:
+        # be default, return wordnet tag "NOUN"
+        return wordnet.NOUN
+
+
+
 def tokenize_lemmatize(df_queries, use_stopwords = True , extract_entities = True):
     
     list_preprocessed = []
