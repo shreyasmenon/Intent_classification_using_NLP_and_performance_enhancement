@@ -2,7 +2,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split , StratifiedKFold
 
 
-X_train, X_test, y_train, y_test = train_test_split(df['query'], df['topic'], test_size=0.2, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(df['query_request'], df['intent'], test_size=0.2, random_state=0)
 
 #Support vector machines
 svc_model = SVC(gamma='auto')
