@@ -7,7 +7,7 @@ X_train, X_test, y_train, y_test = train_test_split(df['query_request'], df['int
 
 #Guassian NB
 nb_model = GaussianNB()
-model.fit(X_train,y_train)
+nb_model.fit(X_train,y_train)
 predicted = model.predict(X_test)
 print(classification_report(y_test,predicted))
 
