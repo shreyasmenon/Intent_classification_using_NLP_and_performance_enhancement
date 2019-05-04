@@ -2,6 +2,18 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split , StratifiedKFold
 
+import tensorflow as tf
+from tensorflow.keras import layers
+from tensorflow.keras.models import Sequential
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras import losses
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras import backend
+from tensorflow.keras import optimizers
+
 
 X_train, X_test, y_train, y_test = train_test_split(df['query_request'], df['intent'], test_size=0.2, random_state=0)
 
