@@ -23,6 +23,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 import cleaning 
 
+list_null_values =['Empty String','altice usa','any update','anything','anything else','but better yet','earl hedin','fine','good morning','good night','got it thanks','have a good night','hello','help','hey',\
+                    'hi','i did already','i don','sorry i tried that as well','issue fixed','is that a no?','no','nope','not working right now','ok','sure','yes','yea', 'welcome','yw','thanks','thank']
 
 if __name__ == '__main__':
     
@@ -31,20 +33,18 @@ if __name__ == '__main__':
     
     df = df.reset_index(drop=True)
             
-    df['query_request'] = cleaning.tokenize_lemmatize(list(df.query_request), stop_words = True, extract_entities = False)
+    df['query_request'] = cleaning.tokenize_lemmatize(list(df.query_request), use_stopwords = True, extract_entities = False)
     
-        
     df['intent'] = df.intent.apply(lambda x : str(x).lower())
     
-    #use this for optimization
-    #df['query_request'] = df['query_request'].apply(lambda x: np.nan if x in list_null_values else x)
+    df['query_request'] = df['query_request'].apply(lambda x: np.nan if x in list_null_values else x)
     
-    #use this for optimization
-    #df.dropna(inplace = True)
+    df.dropna(inplace = True)
+    
     
     X_train, X_test, y_train, y_test = train_test_split(df['query_request'], df['intent'], test_size=0.2, random_state=0)
     
-    parameters = {'clf__C':[1,10,100,1000],'clf__gamma':[1,0.1,0.001,0.0001], 'clf__kernel':['linear','rbf'] , 'vectorizer__ngram_range': [(1, 1), (1, 2),(2,2)]}
+    parameters = {'clf__C':[1,10,100,1000],'clf__gamma':[1,0.1,0.001,0.0001], 'clf__kernel':['linear','rbf','poly'] , 'vectorizer__ngram_range': [(1, 1), (1, 2),(2,2)]}
 
     mdl = Pipeline([('vectorizer', CountVectorizer()),('tfidf', TfidfTransformer()),('clf', SVC())])
     
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     print(classification_report(y_test,predict_classification))
     
     
-    svc_model = Pipeline([('vectorizer', CountVectorizer(ngram_range=(1,2))) , ('tfidf', TfidfTransformer(use_idf=True)) ,('clf', SVC(kernel='rbf', C=10, gamma=0.1, verbose = True)) ])
+    svc_model = Pipeline([('vectorizer', CountVectorizer(ngram_range=(1,2))) , ('tfidf', TfidfTransformer(use_idf=True)) ,('clf', SVC(kernel='linear', C=10, gamma=0.1, verbose = True)) ])
 
     svc_model.fit(X_train, y_train)
     

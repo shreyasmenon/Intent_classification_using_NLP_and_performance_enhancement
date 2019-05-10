@@ -46,6 +46,71 @@ import re
 import math
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import datetime
+import spacy
+from nltk.tokenize import TweetTokenizer
+
+if 'spacy_nlp' not in globals():
+    spacy_nlp = spacy.load('en_core_web_lg') 
+
+
+
+phone_pattern = '(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})' 
+    
+#address_pattern = r'(\d[0-9]{1,4} [\w]{1,10} (st|street|road|rd|blvd|boulevard|ave|avenue) [\w+\s\w+]{0,} (nj|ny|ct|new jersey|new york|connecticut) (\d{5})*)'
+address_pattern = r'([0-9]{1,4} [\w]{1,20}(.*)(st|street|road|rd|blvd|boulevard|ave|avenue|ct|drive|dr|lane|ace|way)(.{0,20})(nj|ny|ct|new jersey|new york|connecticut)[\s]{0,}[\d]{0,5})'
+
+account_number_pattern = "(\d{5}[-\.\s]??\d{6}[-\.\s]??\d{2}[-\.\s]??\d{1}|\(\d{5}\)\s*\d{6}[-\.\s]??\d{2}[-\.\s]??\d{1})"
+
+def extract_metainfo(response:str):
+    
+    meta_response = response.lower()
+    
+    image_link_pattern1 = '(https://t.co/[a-zA-Z0-9]{10})'
+    
+    image_link_pattern2 = '(t.co/[a-zA-Z0-9]{10})'
+    
+    #extract account numbers
+    account_numbers = re.findall(account_number_pattern,meta_response)
+    #replace all account numbers with empty characters are they should not be confused with phone numbers
+    meta_response = re.sub(account_number_pattern,'accountnumberprovided',meta_response)
+    
+    meta_response = re.sub(image_link_pattern1,' ',meta_response)
+    meta_response = re.sub(image_link_pattern2,' ',meta_response)
+    
+    phone_numbers = re.findall(phone_pattern,meta_response)
+    addresses = re.findall(address_pattern,meta_response)
+    
+    if len(phone_numbers) > 0:
+        phone_number = phone_numbers[0][0]
+        meta_response = re.sub(phone_pattern,' phoneprovided ',meta_response)
+        
+    if len(addresses) > 0:
+        addr = addresses[0][0]
+        meta_response = meta_response.replace(addr,' addressprovided ')
+        #Added layer of assurance
+        meta_response = re.sub(address_pattern,' addressprovided ',meta_response)
+        
+
+    
+    meta_response = meta_response.strip()
+    
+    #stripping handles
+    tknzr = TweetTokenizer(strip_handles=True)    
+    tweet_tokens = tknzr.tokenize(meta_response)
+    tweet_tokenized = " ".join(tweet_tokens) 
+        
+    #Get other entities
+    spacy_doc = spacy_nlp(tweet_tokenized)
+    
+    #extracting person
+    list_human_names = [ entity.text for entity in spacy_doc.ents if entity.label_ == 'PERSON' and entity.text != 'altice' and str(entity.text).isalpha() ]
+    
+    if len(list_human_names) > 0 :     
+        for name in list_human_names:
+            meta_response = meta_response.replace(name,' nameprovided ')
+                     
+    return meta_response
+
 
 def get_wordnet_pos(pos_tag):
     
