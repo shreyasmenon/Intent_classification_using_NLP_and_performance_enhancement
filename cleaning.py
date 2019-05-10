@@ -103,7 +103,7 @@ def extract_metainfo(response:str):
     spacy_doc = spacy_nlp(tweet_tokenized)
     
     #extracting person
-    list_human_names = [ entity.text for entity in spacy_doc.ents if entity.label_ == 'PERSON' and entity.text != 'altice' and str(entity.text).isalpha() ]
+    list_human_names = [ entity.text for entity in spacy_doc.ents if entity.label_ == 'PERSON' and str(entity.text).isalpha() ]
     
     if len(list_human_names) > 0 :     
         for name in list_human_names:
@@ -147,8 +147,6 @@ def tokenize_lemmatize(df_queries, use_stopwords = True , extract_entities = Tru
     stop_words.append('http')
     stop_words.append('thank')
     stop_words.append('thanks')
-    stop_words.append('optimumhelp')
-    stop_words.append('optimum')
     stop_words.append('hi')
     stop_words.append('dm')
     stop_words.append('ok')
@@ -279,7 +277,7 @@ def extract_metainfo(response:str):
     spacy_doc = spacy_nlp(tweet_tokenized)
     
     #extracting person
-    list_human_names = [ entity.text for entity in spacy_doc.ents if entity.label_ == 'PERSON' and entity.text != 'altice' and str(entity.text).isalpha() ]
+    list_human_names = [ entity.text for entity in spacy_doc.ents if entity.label_ == 'PERSON' and str(entity.text).isalpha() ]
     
     if len(list_human_names) > 0 :     
         for name in list_human_names:
